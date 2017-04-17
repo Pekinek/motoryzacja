@@ -29,11 +29,10 @@ public class LoginController {
 	@RequestMapping("/login")
 	public ResponseEntity<Token> login(@RequestBody User loginData)
 			throws UserNotFoundException, InvalidPasswordException, UserDisabledException {
-		List<User> users = userRepository.findByLogin(loginData.getLogin());
-		if (users.size() != 1) {
+		User user = userRepository.findByLogin(loginData.getLogin());
+		if (user == null) {
 			throw new UserNotFoundException();
 		}
-		User user = users.get(0);
 		if (!user.getPassword().equals(loginData.getPassword())) {
 			throw new InvalidPasswordException();
 		}
