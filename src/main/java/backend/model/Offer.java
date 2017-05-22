@@ -36,9 +36,6 @@ public class Offer {
     @Size(min=1, max=50)
     private String place;
     @NotNull
-    @Size(min=1, max=50)
-    private String purpose;
-    @NotNull
     @Min(0)
     private Double price;
     private Long date;
