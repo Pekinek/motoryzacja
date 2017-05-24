@@ -90,7 +90,6 @@ public class OfferController {
 		Offer offer = offerRepository.findOne(id);
 
 		if (offer.getUser().getToken().equals(token)) {
-			List<User> users = (List<User>) userRepository.findAll();
 			offerRepository.delete(offer);
 		} else {
 			throw new UnauthorizedException();
