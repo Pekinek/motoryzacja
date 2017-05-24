@@ -10,8 +10,9 @@ import java.util.List;
 @RepositoryRestResource(exported = false)
 public interface UserRepository extends PagingAndSortingRepository<User, String> {
 
-    List<User> findByLogin(@Param("login") String login);
+    User findByLogin(@Param("login") String login);
+    
+    User findByEmail(@Param("email") String email);
 
-    List<User> findByToken(@Param("token") String token);
-
+    User findByToken(@Param("token") String token);
 }

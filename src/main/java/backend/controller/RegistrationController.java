@@ -25,28 +25,37 @@ import java.util.UUID;
 @RestController
 public class RegistrationController {
 
-    @Autowired
-    UserRepository userRepository;
+	@Autowired
+	UserRepository userRepository;
 
-    @Autowired
-    EmailService emailService;
+	@Autowired
+	EmailService emailService;
 
-    @CrossOrigin
-    @RequestMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) throws UserExistsException, InvalidPhoneNumberException {
-        if(!userRepository.findByLogin(user.getLogin()).isEmpty()){
-            throw new UserExistsException();
-        }
-        if(!StringUtils.isNumeric(user.getTelephone())){
-            throw new InvalidPhoneNumberException();
-        }
-        user.setType("normal");
-        user.setToken(UUID.randomUUID().toString());
-        user.setEnabled(true);
-        String password = RandomStringUtils.randomAlphanumeric(10);
-        user.setPassword(DigestUtils.sha512Hex(password));
-        userRepository.save(user);
-        emailService.sendEmail(user, password);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+	@CrossOrigin
+	@RequestMapping("/register")
+	public ResponseEntity<String> register(@RequestBody User user)
+			throws UserExistsException, InvalidPhoneNumberException {
+
+		User user1 = userRepository.findByLogin(user.getLogin());
+		User user2 = userRepository.findByEmail(user.getEmail());
+		
+		
+		if (user1 == null && user2 == null) {
+			if (!StringUtils.isNumeric(user.getTelephone())) {
+				throw new InvalidPhoneNumberException();
+			}
+			user.setType("normal");
+			user.setToken(UUID.randomUUID().toString());
+			user.setEnabled(true);
+			String password = RandomStringUtils.randomAlphanumeric(10);
+			user.setPassword(DigestUtils.sha512Hex(password));
+			userRepository.save(user);
+			emailService.sendEmail(user, password);
+
+		} else {
+			throw new UserExistsException();
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+
+	}
 }

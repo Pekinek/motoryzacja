@@ -24,8 +24,8 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... strings) throws Exception {
-		List<User> e = userRepository.findByLogin("admin");
-		if (e.isEmpty()) {
+		User user = userRepository.findByLogin("admin");
+		if (user == null) {
 			addAdmin();
 		}
 	}

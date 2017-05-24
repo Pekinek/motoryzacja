@@ -39,11 +39,11 @@ public class OfferController {
 	@RequestMapping("/offers/upload")
 	public ResponseEntity<String> addOffer(@RequestHeader("Authorization") String token, @RequestBody Offer offer)
 			throws UnauthorizedException {
-		List<User> userList = userRepository.findByToken(token);
-		if (userList.size() != 1) {
+		User user = userRepository.findByToken(token);
+		if (user.equals(null)) {
 			throw new UnauthorizedException();
 		}
-		offer.setUser(userList.get(0));
+		offer.setUser(user);
 		offer.setDate(new Date().getTime());
 		offer.setArchived(false);
 		offerRepository.save(offer);
@@ -55,10 +55,12 @@ public class OfferController {
 			@RequestParam("type") String type, @RequestParam("place") String place,
 			@RequestParam("minPrice") Double minPrice, @RequestParam("maxPrice") Double maxPrice, Pageable pageable,
 			PagedResourcesAssembler<Offer> assembler) {
-		
-		if(minPrice == null) minPrice = 0.0;
-		if(maxPrice == null) maxPrice = 999999999.0;
-		
+
+		if (minPrice == null)
+			minPrice = 0.0;
+		if (maxPrice == null)
+			maxPrice = 999999999.0;
+
 		Page<Offer> offers = offerRepository.findByFilter(title, type, place, minPrice, maxPrice, pageable);
 		return new ResponseEntity<>(assembler.toResource(offers), HttpStatus.OK);
 	}
@@ -68,11 +70,17 @@ public class OfferController {
 		return new ResponseEntity<>(offerRepository.findOne(id), HttpStatus.OK);
 	}
 
-	@RequestMapping("/offers/user/{login}")
-	public ResponseEntity<PagedResources<Resource<Offer>>> getUserOffers(@PathVariable("login") String login,
-			Pageable pageable, PagedResourcesAssembler<Offer> assembler) {
-		User user = userRepository.findOne(login);
-		Page<Offer> offers = offerRepository.findByUser(user, pageable);
+	@RequestMapping("/offers/my")
+	public ResponseEntity<PagedResources<Resource<Offer>>> getUserOffers(@RequestHeader("Authorization") String token, @RequestParam("title") String title,
+			@RequestParam("type") String type, @RequestParam("place") String place,
+			@RequestParam("minPrice") Double minPrice, @RequestParam("maxPrice") Double maxPrice, Pageable pageable, PagedResourcesAssembler<Offer> assembler) {
+		
+		if (minPrice == null)
+			minPrice = 0.0;
+		if (maxPrice == null)
+			maxPrice = 999999999.0;
+		String login = userRepository.findByToken(token).getLogin();
+		Page<Offer> offers = offerRepository.findByFilterAndUser(title, type, place, minPrice, maxPrice, login, pageable);
 		return new ResponseEntity<>(assembler.toResource(offers), HttpStatus.OK);
 	}
 
