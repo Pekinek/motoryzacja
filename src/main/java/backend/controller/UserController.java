@@ -16,19 +16,36 @@ import backend.repository.UserRepository;
 @RestController
 @CrossOrigin
 public class UserController {
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@RequestMapping("/user/password")
-	public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token, @RequestBody String password)
-			throws UnauthorizedException {
+	public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token,
+			@RequestBody String password) throws UnauthorizedException {
 		User user = userRepository.findByToken(token);
 		if (user == null) {
 			throw new UnauthorizedException();
 		}
 		user.setPassword(password);
 		userRepository.save(user);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@RequestMapping("/user/contact")
+	public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token, @RequestBody User user)
+			throws UnauthorizedException {
+		User oldUser = userRepository.findByToken(token);
+		if (user == null) {
+			throw new UnauthorizedException();
+		}
+		oldUser.setFirstName(user.getFirstName());
+		oldUser.setLastName(user.getLastName());
+		oldUser.setEmail(user.getEmail());
+		oldUser.setTelephone(user.getTelephone());
+
+		userRepository.save(oldUser);
+
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
