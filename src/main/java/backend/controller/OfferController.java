@@ -40,7 +40,7 @@ public class OfferController {
 	public ResponseEntity<String> addOffer(@RequestHeader("Authorization") String token, @RequestBody Offer offer)
 			throws UnauthorizedException {
 		User user = userRepository.findByToken(token);
-		if (user.equals(null)) {
+		if (user == null) {
 			throw new UnauthorizedException();
 		}
 		offer.setUser(user);

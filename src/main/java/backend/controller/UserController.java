@@ -24,7 +24,7 @@ public class UserController {
 	public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token, @RequestBody String password)
 			throws UnauthorizedException {
 		User user = userRepository.findByToken(token);
-		if (user.equals(null)) {
+		if (user == null) {
 			throw new UnauthorizedException();
 		}
 		user.setPassword(password);

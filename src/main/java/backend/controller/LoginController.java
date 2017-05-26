@@ -30,13 +30,13 @@ public class LoginController {
 	public ResponseEntity<Token> login(@RequestBody User loginData)
 			throws UserNotFoundException, InvalidPasswordException, UserDisabledException {
 		User user = userRepository.findByLogin(loginData.getLogin());
-		if (user.equals(null)) {
+		if (user == null) {
 			throw new UserNotFoundException();
 		}
-		if (!user.getPassword().equals(loginData.getPassword())) {
+		if (!(user.getPassword().equals(loginData.getPassword()))) {
 			throw new InvalidPasswordException();
 		}
-		if (user.getEnabled() == false) {
+		if (!user.getEnabled()) {
 			throw new UserDisabledException();
 		}
 		return new ResponseEntity<>(new Token(user.getToken(), user.getLogin(),
