@@ -36,7 +36,7 @@ public class UserController {
 	public ResponseEntity<String> changePassword(@RequestHeader("Authorization") String token, @RequestBody User user)
 			throws UnauthorizedException {
 		User oldUser = userRepository.findByToken(token);
-		if (user == null) {
+		if (oldUser == null) {
 			throw new UnauthorizedException();
 		}
 		oldUser.setFirstName(user.getFirstName());
